@@ -89,31 +89,26 @@ int main() {
 				printf("Client said: %s\n", rcv_message); //msg from webbrowser (its just the header)
 				char* hostname = strstr(rcv_message,"Host: "); //Extract the line that says Host: pages.cpsc.ucalgary.ca 
 			
-				char firstline[1024] = "abc"; //
-				printf("LENGTH **************************** %d \n",strlen(hostname)); 
-				//for(int i = 0, j=6;j<28;i++,j++)
-				for(int i = 0, j=6;hostname[j]!='\r';i++,j++)
+				char firstline[1024] = "abc"; //initialization of firstline
+				int count = 0;
+				for(int i = 0, j=6;(hostname[j]!='\r' || count == 2);i++,j++) {  //getting hostname till /r
 					firstline[i]=hostname[j];
-				
+					if(hostname[j]==':') count++; //checking if there is a port number: eg Host: pages.ucalgary.ca:441
+				}
+					
 				
 				/* Address initialization clientside*/
 				struct sockaddr_in server_addr;
 				memset(&server_addr, 0, sizeof(server_addr));
 				server_addr.sin_family = AF_INET;
-				server_addr.sin_port = htons(MYPORTNUMFORWEBSERVER);
+				server_addr.sin_port = htons(MYPORTNUMFORWEBSERVER); //connecting on port 80
 				struct hostent* address;
-				//char* abc = "pages.cpsc.ucalgary.ca";
-						//printf("**************************** %d \n",strlen(firstline)); 
-					//printf("**************************** %s \n",firstline); 
-					//firstline[strlen(firstline)-1] = '\0';
 					
-					for(int i = 0; i<strlen(firstline); i++) printf("firstline[%d] : %c\n",i,firstline[i]);
-				address = gethostbyname(firstline);
-				//printf("NAME: %s\n",address->h_name);
+				//	for(int i = 0; i<strlen(firstline); i++) printf("firstline[%d] : %c\n",i,firstline[i]); for debugging
+				address = gethostbyname(firstline); // converting hostname to ip address
 				
 				
-				bcopy((char *) address->h_addr, (char *)&server_addr.sin_addr.s_addr, address->h_length);
-						//printf("Address is %s\n",inet_ntoa(server_addr.sin_addr));
+				bcopy((char *) address->h_addr, (char *)&server_addr.sin_addr.s_addr, address->h_length); // copying address to server_addr
 								
 				
 						/* Create the listening socket */
