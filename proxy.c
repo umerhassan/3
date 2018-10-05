@@ -165,13 +165,15 @@ int main() {
 							
 							/* This generates a random index from start of the body to end index which is strlen(rcv_message2) */
 							int num = (rand() % (strlen(rcv_message2) - xyz + 1)) + xyz; 
-							printf("Rand number is: %d\n", num );
-							if(rcv_message2[num] == '<' || rcv_message2[num] == '>' || rcv_message2[num] == 'p' || rcv_message2[num] == 'b'){
+							//for debugging printf("Rand number is: %d\n", num );
+							
+							// Don't change these symbols IF it's html file
+							if((rcv_message2[num] == '<' || rcv_message2[num] == '>' || rcv_message2[num] == 'p' || rcv_message2[num] == 'b') && (strstr(rcv_message2, "HTML") != NULL)){
 								num = num + 6;
 								rcv_message2[num] = 'X';
 							}
 							else {
-								rcv_message2[num] = 'X';
+								rcv_message2[num] = 'X'; //replace index data with X, can be any random number here but X is easier to find
 							}
 						
 						}
@@ -183,15 +185,19 @@ int main() {
 				if (count7 < 0) {
 						printf("Error in send()\n");
 				}
-		
+				
+						close(c_sock);		
+
 		//	}
 
 		}
-				
-
+		
+		close(connected_sock);
 	}
+	
+	
 	/* Close the socket */
-
+	
 	close(lstn_sock);
 	return 0;
 }
