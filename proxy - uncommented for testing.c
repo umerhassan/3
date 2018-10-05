@@ -82,17 +82,16 @@ int main() {
 		/* Receive data from the web browser*/
 				char rcv_message[1024000];
 		//while (1) {
-			int count1 = recv(connected_sock, rcv_message, sizeof(rcv_message), 0); // store the message recieved in rcv_message
+			 int count1 = recv(connected_sock, rcv_message, sizeof(rcv_message), 0);
 			if (count1 < 0) {
 				printf("Error in recv()\n");
 			} else {
-				printf("Client said: %s\n", rcv_message); //msg from webbrowser (its just the header)
-				char* hostname = strstr(rcv_message,"Host: "); //Extract the line that says Host: pages.cpsc.ucalgary.ca 
-			
-				char firstline[1024] = "abc"; //
+				printf("Client said: %s\n", rcv_message); //msg from webbrowser
+				char* hostname = strstr(rcv_message[num],"Host: ");
+				
+				char firstline[1024] = "abc";
 				printf("LENGTH **************************** %d \n",strlen(hostname)); 
-				//for(int i = 0, j=6;j<28;i++,j++)
-				for(int i = 0, j=6;hostname[j]!='\r';i++,j++)
+				for(int i = 0, j=6;j<28;i++,j++)
 					firstline[i]=hostname[j];
 				
 				
