@@ -106,12 +106,10 @@ int main() {
 					
 				//	for(int i = 0; i<strlen(firstline); i++) printf("firstline[%d] : %c\n",i,firstline[i]); for debugging
 				address = gethostbyname(firstline); // converting hostname to ip address
-				
-				
 				bcopy((char *) address->h_addr, (char *)&server_addr.sin_addr.s_addr, address->h_length); // copying address to server_addr
 								
 				
-						/* Create the listening socket */
+				/* Create the listening socket  */
 				int c_sock;
 				c_sock = socket(AF_INET, SOCK_STREAM, 0);
 				if (c_sock < 0) {
@@ -119,7 +117,7 @@ int main() {
 					exit(-1);
 				}
 
-					/* Connect to TCP server */
+				/* Connect to TCP server */
 				int status1;
 				status1 = connect(c_sock, (struct sockaddr *) &server_addr,
 					sizeof(struct sockaddr_in));
@@ -130,7 +128,7 @@ int main() {
 					printf("Connected.\n");
 				}
 
-				/* Send data*/
+				/* Send data - sending the header data to webserver*/
 				int count5;
 				char message[102400];
 				
@@ -140,7 +138,7 @@ int main() {
 				}
 				else { printf("Data sent()\n"); }
 				
-				/*recieve stuff from web server */
+				/*recieve stuff from web server GET RESPONSE */
 				char rcv_message2[1024000];
 				count5 = recv(c_sock, rcv_message2, sizeof(rcv_message2), 0);
 				if (count5 < 0) {
@@ -151,30 +149,34 @@ int main() {
 				
 				/* GET CONTENT LENGTH */
 				char* len = strstr(rcv_message2,"Content-Length: ");
-				
 				char len2[100];
 				if(len != NULL)
-				for(int i = 15, j=0; i<strlen(len); i++, j++) len2[j] = len[i];
-				int abc1 = atoi(len2);
-				//printf("********************Length is: %d\n", abc1 );
+					for(int i = 15, j=0; i<strlen(len); i++, j++) 
+						len2[j] = len[i];
+				int abc1 = atoi(len2); //converting string to a number
 				
+				// for debuggingprintf("********************Length is: %d\n", abc1 );
 				
-				int xyz = strlen(rcv_message2) - abc1 + 4 ; 
-				if(strlen(rcv_message2) > xyz ){
-					for(int i = 0; i< NUMBEROFERRORS ; i++) {
-						int num = (rand() % (strlen(rcv_message2) - xyz + 1)) + xyz; 
-						printf("Rand number is: %d\n", num );
-						if(rcv_message2[num] == '<' || rcv_message2[num] == '>' || rcv_message2[num] == 'p' || rcv_message2[num] == 'b'){
-							num = num + 6;
-							rcv_message2[num] = 'X';
+				// ONLY proceed if the message is 200 OK
+				if(strstr(rcv_message2, "200 OK") != NULL){
+					int xyz = strlen(rcv_message2) - abc1 + 4 ; //total length - content length  gives you start of the body
+					if(strlen(rcv_message2) > xyz ){
+						for(int i = 0; i< NUMBEROFERRORS ; i++) {
+							
+							/* This generates a random index from start of the body to end index which is strlen(rcv_message2) */
+							int num = (rand() % (strlen(rcv_message2) - xyz + 1)) + xyz; 
+							printf("Rand number is: %d\n", num );
+							if(rcv_message2[num] == '<' || rcv_message2[num] == '>' || rcv_message2[num] == 'p' || rcv_message2[num] == 'b'){
+								num = num + 6;
+								rcv_message2[num] = 'X';
+							}
+							else {
+								rcv_message2[num] = 'X';
+							}
+						
 						}
-						else {
-							rcv_message2[num] = 'X';
-						}
-					
 					}
 				}
-				
 				/* Send changed Data back to browser*/
 				int count7;
 				count7 = send(connected_sock, rcv_message2, sizeof(rcv_message2), 0);
