@@ -167,7 +167,7 @@ int main() {
 							int num = (rand() % (strlen(rcv_message2) - xyz + 1)) + xyz; 
 							//for debugging printf("Rand number is: %d\n", num );
 							
-							// Don't change these symbols IF it's html file
+							// Don't change these symbols IF it's HTML file
 							if((rcv_message2[num] == '<' || rcv_message2[num] == '>' || rcv_message2[num] == 'p' || rcv_message2[num] == 'b') && (strstr(rcv_message2, "HTML") != NULL)){
 								num = num + 6;
 								rcv_message2[num] = 'X';
@@ -186,6 +186,8 @@ int main() {
 						printf("Error in send()\n");
 				}
 				
+							/* Close the socket */
+
 						close(c_sock);		
 
 		//	}
